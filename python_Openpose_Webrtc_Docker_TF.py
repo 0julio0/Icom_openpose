@@ -185,6 +185,7 @@ def prediction(img3_queue,Libras): #argumento alterado para receber filas
             y_pred3 = model.predict(img3_queue.get_nowait())
             # y_pred3 = model.predict(img3_queue.get())
             y_pred3 = np.argmax(y_pred3, axis = 1)
+            # y_pred3=3
             Lista_Predict.append(classes[int(y_pred3)])
             c = Counter(Lista_Predict)
 
@@ -395,11 +396,9 @@ class VideoTransformTrack(MediaStreamTrack):
                                 frase.append(frameview2)
                                 start_time4 = time.time()
                                 str1 = ' '.join(frase)
-                                # print(len(frase),str1)
                         if len(frase)>4 or (time.time()-start_time4)>8  : 
                             frase=[]
-                            str1 = ''
-                            # print("timeout",str1)           
+                            str1 = ''     
 
                 
                 start_time = time.time()
