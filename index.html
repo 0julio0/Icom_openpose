@@ -1,0 +1,52 @@
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebRTC demo</title>
+    <style>
+    button {
+        padding: 8px 16px;
+    }
+
+    pre {
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    video {
+        width: 100%;
+    }
+
+    .option {
+        margin-bottom: 8px;
+    }
+
+    #media {
+        text-align: center;   
+        display: inline-flex;   
+        justify-content: space-around;  
+    }
+    .video-block {
+        width: 40%;
+    }
+    </style>
+</head>
+<body>
+
+<button id="start" onclick="start()">Start</button>
+<button id="stop" style="display: none" onclick="stop()">Stop</button>
+
+<div id="media">
+    <div class="video-block">
+        <h2>Imagem local</h2>
+        <video id="local-video" autoplay="true" playsinline="true"></video>
+    </div>
+    <div class="video-block">
+        <h2>Filtro</h2>
+        <video id="video" autoplay="true" playsinline="true"></video>
+        <span id="ping-remote"></span>
+    </div>
+</div>
+<script src="client.js"></script>
+</body>
+</html>
