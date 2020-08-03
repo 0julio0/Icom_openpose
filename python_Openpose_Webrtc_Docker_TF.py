@@ -44,6 +44,7 @@ import uuid
 
 import cv2
 from aiohttp import web
+from aiohttp_sse import sse_response
 from av import VideoFrame
 
 from aiortc import MediaStreamTrack, RTCPeerConnection, RTCSessionDescription
@@ -212,6 +213,18 @@ frase=[]
 str1=''
 start_time4=0
 # frameviewTotal_array=[]
+
+chat_msgs = []
+async def chatMsg(request):
+    loop = request.app.loop
+    async with sse_response(request) as resp:
+        while True:
+            if len(chat_msgs):
+                await resp.send(chat_msgs[0])
+                chat_msgs.pop(0)
+
+            await asyncio.sleep(1, loop=loop)
+    return resp
 
 class VideoTransformTrack(MediaStreamTrack):
     """
@@ -390,12 +403,14 @@ class VideoTransformTrack(MediaStreamTrack):
                         if frameview2=='silencio':
                             frameview2=''
                         # print(frameview2)
+                        # chat_msgs.append(frameview2)
 
                         if len(frameview2)>0:    
                             if frameview2 not in frase:
                                 frase.append(frameview2)
                                 start_time4 = time.time()
                                 str1 = ' '.join(frase)
+                                chat_msgs.append(str1)
                         if len(frase)>4 or (time.time()-start_time4)>8  : 
                             frase=[]
                             str1 = ''     
@@ -458,7 +473,9 @@ async def offer(request):
         log_info("Track %s received", track.kind)
 
         if track.kind == "audio":
+            # AUDIO_TRACK
             # pc.addTrack(player.audio)
+            pc.addTrack(track)
             # recorder.addTrack(track)
             pass
         elif track.kind == "video":
@@ -532,5 +549,7 @@ if __name__ == "__main__":
     app.router.add_get("/", index)
     app.router.add_get("/client.js", javascript)
     app.router.add_post("/offer", offer)
+    app.router.add_get('/chat', chatMsg)
+    # app.router.add_get('/', chatMsg)
     web.run_app(app, access_log=None, port=args.port, ssl_context=ssl_context)
    

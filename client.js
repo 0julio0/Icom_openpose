@@ -92,6 +92,11 @@ function start() {
 
     var time_start = null;
 
+    var evtSource = new EventSource("/chat");
+    evtSource.onmessage = function(e) {
+        console.log(e.data)
+    }
+
     function current_stamp() {
         if (time_start === null) {
             time_start = new Date().getTime();
@@ -120,6 +125,7 @@ function start() {
     };
 
     var constraints = {
+        audio: true,
         video: {
             width: 1280,
             height: 720
@@ -130,10 +136,17 @@ function start() {
     if (constraints.audio || constraints.video) {
 
         navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
-            document.getElementById('local-video').srcObject = stream;
             stream.getTracks().forEach(function(track) {
                 pc.addTrack(track, stream);
             });
+
+            let localvideo = document.getElementById('local-video');
+            if (localvideo){
+                var audioTrack = stream.getAudioTracks();
+                stream.removeTrack(audioTrack[0]);
+                document.getElementById('local-video').srcObject = stream;
+            }
+
             return negotiate();
         }, function(err) {
             alert('Could not acquire media: ' + err);
