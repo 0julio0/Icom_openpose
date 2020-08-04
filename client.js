@@ -108,10 +108,16 @@ function start() {
     pc = createPeerConnection();
 
     var time_start = null;
+    
+    var message_display = document.getElementById('message-display');
+
+    var intervalRemove = setInterval(()=>{
+        message_display.removeChild(message_display.childNodes[0]);
+    },3000)
 
     var evtSource = new EventSource("/chat");
     evtSource.onmessage = function(e) {
-        console.log("SRV DATA: ",e.data)
+        message_display.innerHTML = message_display.innerHTML + ('<span>'+e.data+'<br></span>')
     }
 
     function current_stamp() {
