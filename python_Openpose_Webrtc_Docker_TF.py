@@ -400,6 +400,7 @@ class VideoTransformTrack(MediaStreamTrack):
                                 start_time4 = time.time()
                                 str1 = ' '.join(frase)
                                 chat_msgs.append(str1)
+                                
                         if len(frase)>4 or (time.time()-start_time4)>8  : 
                             frase=[]
                             str1 = ''     
@@ -465,6 +466,7 @@ async def offer(request):
         if track.kind == "audio":
             # AUDIO_TRACK
             # pc.addTrack(player.audio)
+
             pc.addTrack(track)
             # recorder.addTrack(track)
             pass
