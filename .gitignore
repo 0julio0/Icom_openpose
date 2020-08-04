@@ -1,0 +1,10 @@
+aiortc-master/*
+opencv-grabcut/*
+output_json_icom/*
+output_json_icom_80x80/*
+videos_fromWeb/*
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
