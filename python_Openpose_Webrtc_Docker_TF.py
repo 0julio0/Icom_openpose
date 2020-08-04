@@ -179,10 +179,7 @@ def prediction(img3_queue,Libras): #argumento alterado para receber filas
     while True: #para deixar em loop infinito
         if(img3_queue.qsize() > 0):
             start_time3 = time.time() #verifico se tem dados na fila
-            # try:
-            #     """
-            #     img3_queue.get() para consumir os dados da fila
-            #     """
+
             y_pred3 = model.predict(img3_queue.get_nowait())
             # y_pred3 = model.predict(img3_queue.get())
             y_pred3 = np.argmax(y_pred3, axis = 1)
@@ -198,7 +195,6 @@ def prediction(img3_queue,Libras): #argumento alterado para receber filas
             if len(Lista_Predict)==11:
                 Lista_Predict.remove(Lista_Predict[0]) 
             fps =  int((1.0/(time.time() - start_time3)))
-            # print(fps,texto,c,list(c.keys())[0],next(iter(c.values())))
             print(fps,texto,c)
 
 
@@ -236,11 +232,6 @@ class VideoTransformTrack(MediaStreamTrack):
     def __init__(self, track):  
         super().__init__()  # don't forget this!
         self.track = track
-        # self.frameviewTotal_array_queue = multiprocessing.Manager().Queue()
-        # self.Libras = multiprocessing.Manager().Queue()
-        # self.p = multiprocessing.Process(target=prediction, args=(self.frameviewTotal_array_queue,)) #inicia o multiprocessing
-        # # frases.append(self.p)
-        # self.p.start()
 
     async def recv(self):
 
@@ -276,7 +267,7 @@ class VideoTransformTrack(MediaStreamTrack):
         frame = await self.track.recv()
         img = frame.to_ndarray(format="bgr24")
         img = cv2.flip(img,180) 
-        tm = (time.time() - start_time)
+        tm = (time.time() - start_time)       
         if tm>=0.0599:
             datum = op.Datum()
             imageToProcess = (img)
@@ -402,8 +393,6 @@ class VideoTransformTrack(MediaStreamTrack):
                         frameview2=Libras.get_nowait()
                         if frameview2=='silencio':
                             frameview2=''
-                        # print(frameview2)
-                        # chat_msgs.append(frameview2)
 
                         if len(frameview2)>0:    
                             if frameview2 not in frase:
@@ -429,6 +418,7 @@ class VideoTransformTrack(MediaStreamTrack):
         new_frame.pts = frame.pts
         new_frame.time_base = frame.time_base
         return new_frame
+
         # return frame
 
 async def index(request):
