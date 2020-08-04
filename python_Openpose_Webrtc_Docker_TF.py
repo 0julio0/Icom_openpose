@@ -540,6 +540,5 @@ if __name__ == "__main__":
     app.router.add_get("/client.js", javascript)
     app.router.add_post("/offer", offer)
     app.router.add_get('/chat', chatMsg)
-    # app.router.add_get('/', chatMsg)
     web.run_app(app, access_log=None, port=args.port, ssl_context=ssl_context)
    
