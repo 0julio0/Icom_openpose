@@ -46,6 +46,7 @@ import cv2
 from aiohttp import web
 from aiohttp_sse import sse_response
 from av import VideoFrame
+import av
 
 from aiortc import MediaStreamTrack, RTCPeerConnection, RTCSessionDescription
 from aiortc.contrib.media import MediaBlackhole, MediaPlayer, MediaRecorder
@@ -209,7 +210,7 @@ frase=[]
 str1=''
 start_time4=0
 # frameviewTotal_array=[]
-
+player = MediaPlayer(os.path.join(ROOT, "test.wav"))
 chat_msgs = []
 async def chatMsg(request):
     loop = request.app.loop
@@ -221,6 +222,17 @@ async def chatMsg(request):
 
             await asyncio.sleep(1, loop=loop)
     return resp
+
+class AudioTrack():
+    
+    kind = "audio"
+    async def recv(self):
+ 
+        print('AUDIO - TRACEKR')
+    # def __init__(self, track):  
+    #     super().__init__()  # don't forget this!
+    #     self.track = track
+    #     print('AUDIO - TRACEKR',track.kind)
 
 class VideoTransformTrack(MediaStreamTrack):
     """
@@ -400,7 +412,10 @@ class VideoTransformTrack(MediaStreamTrack):
                                 start_time4 = time.time()
                                 str1 = ' '.join(frase)
                                 chat_msgs.append(str1)
-                                
+                                player = MediaPlayer(os.path.join(ROOT, "demo-instruct.wav"))
+
+
+                    
                         if len(frase)>4 or (time.time()-start_time4)>8  : 
                             frase=[]
                             str1 = ''     
@@ -415,7 +430,14 @@ class VideoTransformTrack(MediaStreamTrack):
                 print('saindo...')         
                 p.terminate()                      
 
+        
         new_frame = VideoFrame.from_ndarray(img2, format="bgr24")
+
+        # silence = np.zeros((2, 1152), dtype='int16')
+        # new_frame = av.AudioFrame.from_ndarray(silence, 's16p')
+
+
+
         new_frame.pts = frame.pts
         new_frame.time_base = frame.time_base
         return new_frame
@@ -432,6 +454,7 @@ async def javascript(request):
     return web.Response(content_type="application/javascript", text=content)
 
 
+
 async def offer(request):
     params = await request.json()
     offer = RTCSessionDescription(sdp=params["sdp"], type=params["type"])
@@ -444,6 +467,12 @@ async def offer(request):
         logger.info(pc_id + " " + msg, *args)
 
     log_info("Created for %s", request.remote)
+
+    # player = MediaPlayer(os.path.join(ROOT, "test.wav"))
+    if args.write_audio:
+        recorder = MediaRecorder(args.write_audio)
+    else:
+        recorder = MediaBlackhole()
 
     @pc.on("datachannel")
     def on_datachannel(channel):
@@ -460,25 +489,36 @@ async def offer(request):
             pcs.discard(pc)
 
     @pc.on("track")
+
     def on_track(track):
         log_info("Track %s received", track.kind)
 
         if track.kind == "audio":
             # AUDIO_TRACK
+            # local_audio = AudioTrack(track)
+            # local_audio = AudioTrack()
+            # pc.addTrack(local_audio)
             # pc.addTrack(player.audio)
+            
 
-            pc.addTrack(track)
+            pc.addTrack(player.audio)
+
             # recorder.addTrack(track)
+            # pc.addTrack(track)
+
             pass
         elif track.kind == "video":
             local_video = VideoTransformTrack(track)
             pc.addTrack(local_video)
+            # pc.addTrack(player.audio)
+            print("VIDEO")
 
         @track.on("ended")
         async def on_ended():
             log_info("Track %s ended", track.kind)
             # await recorder.stop()
 
+    
     # handle offer
     await pc.setRemoteDescription(offer)
     # await recorder.start()
