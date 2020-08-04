@@ -109,6 +109,11 @@ function start() {
 
     var time_start = null;
 
+    var evtSource = new EventSource("/chat");
+    evtSource.onmessage = function(e) {
+        console.log("SRV DATA: ",e.data)
+    }
+
     function current_stamp() {
         if (time_start === null) {
             time_start = new Date().getTime();
