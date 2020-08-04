@@ -48,6 +48,8 @@ from aiohttp_sse import sse_response
 from av import VideoFrame
 import av
 
+from unittest import TestCase
+from aiortc.mediastreams import AudioStreamTrack, VideoStreamTrack
 from aiortc import MediaStreamTrack, RTCPeerConnection, RTCSessionDescription
 from aiortc.contrib.media import MediaBlackhole, MediaPlayer, MediaRecorder
 
@@ -222,17 +224,19 @@ async def chatMsg(request):
 
             await asyncio.sleep(1, loop=loop)
     return resp
+class MediaStreamTrackTest(TestCase):
+    def test_audio(self):
+        track = AudioStreamTrack()
+        self.assertEqual(track.kind, "audio")
+        self.assertEqual(len(track.id), 36)
+        print("AUDIO     AUDIO")
 
-class AudioTrack():
-    
-    kind = "audio"
-    async def recv(self):
- 
-        print('AUDIO - TRACEKR')
-    # def __init__(self, track):  
-    #     super().__init__()  # don't forget this!
-    #     self.track = track
-    #     print('AUDIO - TRACEKR',track.kind)
+
+class AudioTrack(AudioStreamTrack): 
+    track = AudioStreamTrack()
+    print("track kind", track.kind)
+
+
 
 class VideoTransformTrack(MediaStreamTrack):
     """
@@ -246,7 +250,7 @@ class VideoTransformTrack(MediaStreamTrack):
         self.track = track
 
     async def recv(self):
-
+        # print("jdjdjdjdjdjdjdjdjd",self.track.kind)
         start_time2 = time.time()
         global loc
         global posic0x
@@ -498,10 +502,18 @@ async def offer(request):
             # local_audio = AudioTrack(track)
             # local_audio = AudioTrack()
             # pc.addTrack(local_audio)
-            # pc.addTrack(player.audio)
+            pc.addTrack(player.audio)
+
+            # MediaStreamTrackTest
+            # local_audio = MediaStreamTrackTest(track)
+            # local_audio=  MediaStreamTrackTest()
+            # pc.addTrack(local_audio)
+            # print(track)
+            # local_audio = AudioTrack(track)
+            # pc.addTrack(local_audio)
             
 
-            pc.addTrack(player.audio)
+            # pc.addTrack(player.audio)
 
             # recorder.addTrack(track)
             # pc.addTrack(track)
