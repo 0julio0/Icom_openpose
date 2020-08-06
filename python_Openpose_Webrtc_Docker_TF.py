@@ -222,9 +222,6 @@ async def chatMsg(request):
 
             await asyncio.sleep(1, loop=loop)
     return resp
-<<<<<<< HEAD
-    
-=======
 
 async def textToSpeech(request):
     text = request.match_info.get('text', None)
@@ -237,7 +234,6 @@ async def textToSpeech(request):
     content = open("audios/"+ file_name +".mp3" , "rb").read()
     return web.Response(content_type="audio/mpeg", body=content)
 
->>>>>>> 74626b978d1be9b9a75899edf540875da7bc468c
 class MediaStreamTrackTest(TestCase):
     def test_audio(self):
         track = AudioStreamTrack()
