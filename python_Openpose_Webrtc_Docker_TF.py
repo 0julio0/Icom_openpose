@@ -47,6 +47,7 @@ from aiohttp import web
 from aiohttp_sse import sse_response
 from av import VideoFrame
 import av
+from gtts import gTTS
 
 from unittest import TestCase
 from aiortc.mediastreams import AudioStreamTrack, VideoStreamTrack
@@ -156,9 +157,6 @@ opWrapper.start()
 seq_len = 18
 texto=''
 
-
-
-
 # def prediction(img3,start_time2):
 def prediction(img3_queue,Libras): #argumento alterado para receber filas
 
@@ -219,12 +217,27 @@ async def chatMsg(request):
     async with sse_response(request) as resp:
         while True:
             if len(chat_msgs):
-                await resp.send(chat_msgs[0])
+                await resp.send(json.dumps(chat_msgs[0]))
                 chat_msgs.pop(0)
 
             await asyncio.sleep(1, loop=loop)
     return resp
+<<<<<<< HEAD
     
+=======
+
+async def textToSpeech(request):
+    text = request.match_info.get('text', None)
+    file_name = text.replace(' ','_')
+
+    if not os.path.exists("audios/" + file_name + ".mp3"):
+        tts = gTTS(text, lang='pt-br')
+        tts.save( "audios/" + file_name + '.mp3')
+    
+    content = open("audios/"+ file_name +".mp3" , "rb").read()
+    return web.Response(content_type="audio/mpeg", body=content)
+
+>>>>>>> 74626b978d1be9b9a75899edf540875da7bc468c
 class MediaStreamTrackTest(TestCase):
     def test_audio(self):
         track = AudioStreamTrack()
@@ -416,10 +429,9 @@ class VideoTransformTrack(MediaStreamTrack):
                                 frase.append(frameview2)
                                 start_time4 = time.time()
                                 str1 = ' '.join(frase)
-                                chat_msgs.append(str1)
-                                player = MediaPlayer(os.path.join(ROOT, "demo-instruct.wav"))
-
-
+                                # chat_msgs.append(str1)
+                                chat_msgs.append({"type":"audio","text": frase})
+                                # player = MediaPlayer(os.path.join(ROOT, "demo-instruct.wav"))
                     
                         if len(frase)>4 or (time.time()-start_time4)>8  : 
                             frase=[]
@@ -595,5 +607,6 @@ if __name__ == "__main__":
     app.router.add_get("/client.js", javascript)
     app.router.add_post("/offer", offer)
     app.router.add_get('/chat', chatMsg)
+    app.router.add_get('/textToSpeech/{text}', textToSpeech)
     web.run_app(app, access_log=None, port=args.port, ssl_context=ssl_context)
    

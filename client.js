@@ -115,8 +115,15 @@ function start() {
         message_display.removeChild(message_display.childNodes[0]);
     },3000)
 
+    function playAudio(word){
+        document.getElementById('audio-voice').src = "/textToSpeech/"+encodeURIComponent(word)
+    }
+
     var evtSource = new EventSource("/chat");
     evtSource.onmessage = function(e) {
+        let data = JSON.parse(e.data);
+        if (data.type || data.type == 'audio')
+            playAudio(data.text);
         message_display.innerHTML = message_display.innerHTML + ('<span>'+e.data+'<br></span>')
     }
 
