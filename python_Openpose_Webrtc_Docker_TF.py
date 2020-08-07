@@ -216,7 +216,7 @@ async def chatMsg(request):
     loop = request.app.loop
     async with sse_response(request) as resp:
         while True:
-            if len(chat_msgs):
+            if len(chat_msgs) > 0:
                 await resp.send(json.dumps(chat_msgs[0]))
                 chat_msgs.pop(0)
 
