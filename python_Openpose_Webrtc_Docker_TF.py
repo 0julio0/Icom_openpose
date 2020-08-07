@@ -419,20 +419,30 @@ class VideoTransformTrack(MediaStreamTrack):
                         frameview2=Libras.get_nowait()
                         if frameview2=='silencio':
                             frameview2=''
+                        if frameview2=='bomdia':
+                            frameview2='bom dia'    
+                        if frameview2=='porfavor':
+                            frameview2='por favor'    
 
                         if len(frameview2)>0:    
+                            
                             if frameview2 not in frase:
+                                chat_msgs.append({"type":"audio","text": frameview2})
                                 frase.append(frameview2)
                                 start_time4 = time.time()
                                 str1 = ' '.join(frase)
-                                # chat_msgs.append(str1)
-                                chat_msgs.append({"type":"audio","text": frase})
-                                # player = MediaPlayer(os.path.join(ROOT, "demo-instruct.wav"))
-                    
-                        if len(frase)>4 or (time.time()-start_time4)>8  : 
+
+
+                        elif len(frase)>4:
+                            print("frase maior que 4")
+                            print(len(frase),frase,str1)
                             frase=[]
                             str1 = ''     
-
+                        elif len(str1)>0 and (time.time()-start_time4)>5:
+                            print("tempo maior que 3")
+                            print(len(frase),frase,str1)
+                            frase=[]
+                            str1 = ''     
                 
                 start_time = time.time()
                 cv2.putText(img2, str1, (20,30), font, fontScale, color, 1, cv2.LINE_AA)
