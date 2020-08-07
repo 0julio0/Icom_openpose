@@ -121,10 +121,15 @@ function start() {
 
     var evtSource = new EventSource("/chat");
     evtSource.onmessage = function(e) {
-        let data = JSON.parse(e.data);
-        if (data.type || data.type == 'audio')
-            playAudio(data.text);
-        message_display.innerHTML = message_display.innerHTML + ('<span>'+e.data+'<br></span>')
+        console.log(e.data)
+        try {
+            let data = JSON.parse(e.data);
+            if (data.type || data.type == 'audio')
+                playAudio(data.text);
+            message_display.innerHTML = message_display.innerHTML + ('<span>'+e.data+'<br></span>')
+        } catch (err) {
+            console.log(err)
+        }
     }
 
     function current_stamp() {
